@@ -1,37 +1,84 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+// import { Session } from "@supabase/supabase-js";
+// import { Stack, useRouter } from "expo-router";
+// import { useState, useEffect } from "react";
+// import { supabase } from "@/lib/supabase";
+// import { View, ActivityIndicator } from "react-native";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+// export default function RootLayout() {
+// 	const [session, setSession] = useState(null);
+// 	const router = useRouter();
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// 	useEffect(() => {
+// 		const currentSession = supabase.auth.session();
+// 		setSession(currentSession);
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+// 		const { data: authListener } = supabase.auth.onAuthStateChange(
+// 			(event, session) => {
+// 				setSession(session);
+// 				if (!session) {
+// 					router.push("/login"); // Redirect to login if no session
+// 				}
+// 			}
+// 		);
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+// 		return () => {
+// 			authListener?.unsubscribe();
+// 		};
+// 	}, []);
 
-  if (!loaded) {
-    return null;
-  }
+// 	if (session === null) {
+// 		// Show loading indicator while checking session
+// 		return (
+// 			<View
+// 				style={{
+// 					flex: 1,
+// 					justifyContent: "center",
+// 					alignItems: "center",
+// 				}}
+// 			>
+// 				<ActivityIndicator size="large" />
+// 			</View>
+// 		);
+// 	}
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
-  );
+// 	return (
+// 		<Stack>
+// 			{/* Stack navigator will automatically include index and other screens */}
+// 		</Stack>
+// 	);
+// 	// const [session, setSession] = useState<Session | null>(null);
+
+// 	// useEffect(() => {
+// 	// 	supabase.auth.getSession().then(({ data: { session } }) => {
+// 	// 		setSession(session);
+// 	// 	});
+
+// 	// 	supabase.auth.onAuthStateChange((_event, session) => {
+// 	// 		setSession(session);
+// 	// 	});
+// 	// }, []);
+
+// 	// return (
+// 	// 	<Stack>
+// 	// 		{session ? (
+// 	// 			<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+// 	// 		) : (
+// 	// 			<Stack.Screen name="index" options={{ headerShown: false }} />
+// 	// 		)}
+// 	// 		{/* <Stack.Screen name="+not-found" /> */}
+// 	// 	</Stack>
+// 	// );
+// }
+
+import { Slot } from "expo-router";
+import { SessionProvider } from "../components/ctx";
+
+export default function Root() {
+	console.log("Root");
+	// Set up the auth context and render our layout inside of it.
+	return (
+		<SessionProvider>
+			<Slot />
+		</SessionProvider>
+	);
 }
