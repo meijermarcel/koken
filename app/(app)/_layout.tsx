@@ -1,18 +1,64 @@
 import { Text } from "react-native";
-import { Redirect, Stack } from "expo-router";
+import { Redirect, Stack, useRouter } from "expo-router";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Tabs } from "expo-router";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { Session } from "@supabase/supabase-js";
 
 import { useSession } from "../../components/ctx";
 
 export default function AppLayout() {
-	const { session, isLoading } = useSession();
-	console.log("session", session);
+	// const { session, isLoading } = useSession();
+	// const [session, setSession] = useState(null);
+	// const router = useRouter();
+
+	// useEffect(() => {
+	// 	const currentSession = supabase.auth.session();
+	// 	setSession(currentSession);
+
+	// 	const { data: authListener } = supabase.auth.onAuthStateChange(
+	// 		(event, session) => {
+	// 			setSession(session);
+	// 			if (!session) {
+	// 				router.push("/login"); // Redirect to login if no session
+	// 			}
+	// 		}
+	// 	);
+
+	// 	return () => {
+	// 		authListener?.unsubscribe();
+	// 	};
+	// }, []);
+
+	// console.log("session", session);
+
+	// useEffect(() => {
+	// 	supabase.auth.getSession().then(({ data: { session } }) => {
+	// 		setSession(session);
+	// 	});
+
+	// 	supabase.auth.onAuthStateChange((_event, session) => {
+	// 		setSession(session);
+	// 	});
+	// }, []);
+
+	const [session, setSession] = useState<Session | null>(null);
+
+	useEffect(() => {
+		supabase.auth.getSession().then(({ data: { session } }) => {
+			setSession(session);
+		});
+
+		supabase.auth.onAuthStateChange((_event, session) => {
+			setSession(session);
+		});
+	}, []);
 
 	// You can keep the splash screen open, or render a loading screen like we do here.
-	if (isLoading) {
-		return <Text>Loading...</Text>;
-	}
+	// if (isLoading) {
+	// 	return <Text>Loading...</Text>;
+	// }
 
 	// Only require authentication within the (app) group's layout as users
 	// need to be able to access the (auth) group and sign in again.
